@@ -1,7 +1,7 @@
 # initial exploration of seagrass data 
 
 # Stephanie K. Archer 04/04/2022
-
+# to make example for best practice doc
 # load packaeges
 source("03_scripts/install_packages_function.R")
 lp("tidyverse")
