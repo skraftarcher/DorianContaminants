@@ -1,0 +1,76 @@
+---
+title: "BS-2021-727910 Post Sampling Report"
+author: "Stephanie K. Archer"
+date: "February 7, 2022"
+output:   
+  bookdown::pdf_book:
+    number_sections: false
+    toc: false
+editor_options: 
+  chunk_output_type: console
+bibliography: AbacoContaminants.bib
+csl: estuaries-and-coasts.csl
+---
+
+# Summary
+
+A team of scientists led by Dr. Stephanie Archer undertook field work permitted under BS-2021-727910 from December 15-31, 2021. Seagrass beds were surveyed at six sites (Treasure Cay, Hills Creek, Camp  Abaco, Snake Cay, and two sites within the Bight of Old Robinson). A total of 60 seagrass shoots were collected, 10 per survey site. A total of 35 oysters were collected from seven sites (Treasure Cay, Hills Creek, and five sites around Marsh Harbour). Ten conch were collected, five each from two sites in the Bight of Old Robinson. All samples, including those from the June sampling under permit BS-2021-237314 were successfully exported and are in the process of being analyzed for heavy metal and polycyclic-aromatic-hydrocarbon (benzo-a-pyrene specifically) concentrations.
+
+# Introduction 
+
+On September 1st, 2019 Hurricane Dorian hit Marsh Harbour, Abaco, The Bahamas as the strongest hurricane ever to make landfall. 
+The passage of Hurricane Dorian resulted in catastrophic damage throughout central and northern Abaco and the outlying cays. 
+This destruction resulted in large amounts of debris entering nearshore marine ecosystems, likely
+introducing high levels of contaminants. 
+The introduction of contaminants can have deleterious effects on ecosystems, ranging from large scale die-offs to long-term sublethal impacts on community members [@Peters1997]. 
+Hurricanes are predicted to become more frequent and more powerful in the future,decreasing the recovery period for ecosystems and the people that rely on them, and placing an even greater significance on ecosystem resistance and resilience. 
+Theory suggests that ecosystems with higher habitat quality will have higher levels of biodiversity and therefore will be more stable in the face of disturbance [@Oliver2015]. 
+However, these systems may not prove to be more stable if the higher quality habitats serve to trap and concentrate harmful contaminants entering the system. 
+Here, we present the results of our second excursion to survey Abaco's seagrass beds and collect samples that will, upon analysis, allow us to determine if Abaco's nearshore environments are contaminated and if so, to what extent.
+
+# Methods  
+## Seagrass Surveys
+Seagrasses, macroalgae, and epibenthic invertebrates were visually surveyed at 6 sites (Table \@ref(tab:table1)) using a modified Braun-Blanquet survey (see Appendix A for a detailed methodology). Researchers visually searched for conch and lobster. Only conch were found and only at two sites. Where they were found the conch were collected by hand, euthanize, weighed, and tissue samples were collected. Attempts were made to fish for grunts. These attempts were unsuccessful.  
+
+## Oyster collections  
+Oysters were collected from seven sites around Abaco (Table \@ref(tab:table1)). The shell length and width were measured and then the oysers were shucked and the tissue was immediately frozen.
+
+```{r table1, echo=FALSE}
+library(knitr)
+library(kableExtra)
+tble<-readxl::read_xlsx("01_odata/Dec2021Report.xlsx")
+kbl(tble,caption="Summary of effort at each site visited",escape=FALSE,booktabs=T)%>%kable_styling(latex_options = "scale_down",font_size=11)
+```
+
+## Preliminary results  
+
+```{r pp,echo=FALSE,fig.cap="Primary producer Community Structure in June and December 2021"}
+include_graphics("04_figures/primary_producers_community.png")
+```
+
+Primary producer communities (seagrass and macroalgae) were plotted using a principle components analysis (Figure \@ref(fig:pp)). Preliminary results indicate there is a significant shift in the primary producer community as you move from North to South along Abaco. This corresponds with the intensity of storm conditions, and mirrors what others have found on coral reefs (PIMS). This shift was consistent across June and December sampling events.
+
+```{r seagrassbb,echo=FALSE, fig.cap="Seagrass abundance trends over the course of this study."}
+include_graphics("04_figures/SG_bb_Dec2021.png")
+```
+
+Survey sites generally fell into two categories, 1) sites where *Thalassia testudinum* is declining and *Halodule wrightii* and/or *Syringodium filiforme* are increasing, and 2) 1) sites where *Thalassia testudinum* is increasing and *Halodule wrightii* and/or *Syringodium filiforme* are declining. Sites in category one are on the northern part of Abaco that experienced stronger hurricane conditions where as sites in category 2 are located more to the South and were exposed to less intense conditions during Dorian. These results are evident in both abundance scores (Figure \@ref(fig:seagrassbb)) and the trend in *T. testudinum* density along the gradient of storm intensity is evident in shoot density counts (Figure \@ref(fig:seagrassSD))
+
+```{r seagrassSD,echo=FALSE, fig.cap="Seagrass shoot density trends over the course of this study."}
+include_graphics("04_figures/SG_shoots_Dec2021.png")
+```
+
+A total of 10 conch were collected from three sites, two within the Bight of Old Robinson (5 conch each). A total of 60 *T. testudinum* shoots were collected, ten from each site we surveyed (Table \@ref(tab:table1)).
+
+# Challenges and Adaptations to protocols  
+The fish traps we had planned to use were lost before we arrived on Abaco. As a result we were forced to attempt to fish for grunts. These efforts were unsuccessful. Consequently no grunts were collected. Other taxa were not found at most sites.
+The main challenge we experienced during our sampling trip was that the equipment we had planned to use to process samples into a liquid extract was not available. This equipment is owned by University of The Bahamas. However, due to delays related to COVID-19 representatives have not been able to travel to UB to install the equipment and train UB staff on their use. As a result all samples we collected were exported as tissue. 
+
+# Local Participation  
+Several Bahamians were involved in the research. University of The Bahamas student, Makeda Serju interned with us during the project. She was involved in all aspects of the research and completed the data entry. Drs. Diane Claridge and Charlotte Dunn of Bahamas Marine Mammal Research Organization have been involved with this work since its inception. Finally Drs. Kristen Welsh-Unwala and Williamson Gustave, both professors at The University of The Bahamas were integral to the success of the project through their logistical support and the selection of Makeda as an intern.
+
+# Data
+All seagrass survey data are included as Appendix B. Data regarding contaminant loads in the samples will not be available until Summer 2022 as methods must be developed to accurately analyze these samples.
+
+# References  
+<div id="refs"></div> 
