@@ -16,6 +16,9 @@
 # History files
 .Rhistory
 .Rapp.history
+# folders
+/01_odata/
+/Abaco_Seagrass/
 # Session Data files
 .RData
 # User-specific files
