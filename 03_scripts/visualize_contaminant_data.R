@@ -13,10 +13,32 @@ lp("sp")
 lp("ggspatial")
 lp("readxl")
 
-hm<-read.csv("01_odata/contam.csv")
+hm.sed.d<-read.csv("01_odata/sediment_contam_december.csv")%>%mutate(sample.type="sediment",
+                                                                     month="december")
+#columns to keep
+colstokeep<-colnames(hm.sed.d)
+
+hm.wat.md<-read.csv("01_odata/water_marinas_december_contam.csv")%>%mutate(sample.type="water",
+                                                                           month="december")%>%
+  select(all_of(colstokeep))
+
+hm.wat.mj<-read.csv("01_odata/water_marinas_june_contam.csv",nrows=15)%>%mutate(sample.type="water",
+                                                                                  month="june")%>%
+  select(all_of(colstokeep))
+
+hm.wat.sgj<-read.csv("01_odata/water_sgb_june_contam.csv")%>%mutate(sample.type="water",
+                                                                    month="june")%>%
+  select(all_of(colstokeep))
+
+hm.anmls.j<-read.csv("01_odata/animal_contam.csv")%>%mutate(sample.type="animals",
+                                                            month="june")
+
 sites<-read_xlsx("01_odata/sites.xlsx",sheet = "december")%>%
   mutate(Site=Site2)
 hm.levels<-read_xlsx("01_odata/hm_loads_sharifuzzaman.xlsx")
+
+hm.watsed<-bind_rows(hm.sed.d,hm.wat.md,hm.wat.mj,hm.wat.sgj)
+
 
 # land<-st_read("01_odata/land_polygons.shp",)# read in shape file
 # dt<-read_xlsx("01_odata/dorian_track.xlsx",sheet = "Sheet2")# read in dorian's track
@@ -25,8 +47,8 @@ hm.levels<-read_xlsx("01_odata/hm_loads_sharifuzzaman.xlsx")
 
 # look at data to make sure it imported properly etc
 
-glimpse(hm)
-summary(hm)
+glimpse(hm.watsed)
+summary(hm.watsed)
 theme_set(theme_bw()+theme(panel.grid=element_blank()))
 
 
@@ -37,8 +59,8 @@ mhnames<-c("Jib Room",
            "Rainbow Rentals",
            "Boat Harbour",
            "Calcutta")
-hm2<-hm%>%
-  pivot_longer(Cr:Ba,
+hm2<-hm.watsed%>%
+  pivot_longer(Pb:V,
                names_to = "heavymetal",
                values_to = "conc")%>%
   mutate(Site2=case_when(
@@ -46,9 +68,9 @@ hm2<-hm%>%
     Site %in% c("BOR2","BOR 2","Jerrys","Jerry's")~"BOR",
     !Site %in% c("BOR2","BOR 2","Jerrys",mhnames)~Site),
     Site=ifelse(Site %in% c("BOR2","BOR 2"),"BOR",Site),
-    sg_m=ifelse(Site2 %in% c("Marsh Harbour","Treasure Cay Marina"),"Harbour or Marina","Seagrass Bed"))%>%
+    sg_m=ifelse(Site2 %in% c("Marsh Harbour","Treasure Cay Marina","Crossing Rocks"),"Harbour or Marina","Seagrass Bed"))%>%
   group_by(heavymetal)%>%
-  mutate(bn=min(conc),
+  mutate(bn=ifelse(min(conc)==0,.0000000001,min(conc)),
          igeo=log(conc/(1.5*bn)),
          CF=conc/bn)
 
@@ -58,7 +80,8 @@ hm2$Site2<-factor(hm2$Site2,levels=c("Treasure Cay",
                                      "Marsh Harbour",
                                      "Camp Abaco",
                                      "Snake Cay",
-                                     "BOR"))
+                                     "BOR",
+                                     "Crossing Rocks"))
 
 hm2$Site<-factor(hm2$Site,levels=c("Treasure Cay",
                                    "Treasure Cay Marina",
@@ -71,7 +94,8 @@ hm2$Site<-factor(hm2$Site,levels=c("Treasure Cay",
                                    "Camp Abaco",
                                    "Snake Cay",
                                    "BOR",
-                                   "Jerry's"))
+                                   "Jerry's",
+                                   "Crossing Rocks"))
 
 hm2.colors<-data.frame(Site=unique(hm2$Site2))%>%
   left_join(sites)
@@ -116,9 +140,10 @@ hm2.colors4<-filter(hm2.colors2,!Site %in% c("Treasure Cay",
                                            "BOR"))
 
 
-# visualize contaminant data by site
-ggplot(data=hm2,aes(x=Site,y=igeo))+
-  geom_hline(aes(yintercept=1),linetype="dashed",alpha=.7)+
+# visualize sediment contaminant data by site
+ggplot(data=hm2%>%
+         filter(sample.type=="sediment"),aes(x=Site,y=igeo,shape="month"))+
+  #geom_hline(aes(yintercept=1),linetype="dashed",alpha=.7)+
   geom_jitter(aes(color=Site),width = .1,alpha=.5)+
   #geom_boxplot(aes(color=Site2),alpha=.5)+
   facet_grid(rows=vars(heavymetal),cols = vars(sg_m),scales="free")+
@@ -129,11 +154,12 @@ ggplot(data=hm2,aes(x=Site,y=igeo))+
   ylab("mg/kg")
 
 
-ggsave("04_figures/contaminants_by_site.png",width=7,height=9)
+ggsave("04_figures/sediment_contaminants_by_site.png",width=7,height=9)
 
 
 # visualize contaminant data by site with reference levels
-hm3<-left_join(hm2,hm.levels)%>%
+hm3<-filter(hm2,sample.type=="sediment")%>%
+  left_join(hm.levels)%>%
   filter(!is.na(TEL))
 
 ggplot(data=hm3,aes(x=Site,y=conc))+
@@ -148,7 +174,7 @@ ggplot(data=hm3,aes(x=Site,y=conc))+
   ylab("mg/kg")
 
 
-ggsave("04_figures/contaminants_by_site_all_PEL.png",width=7,height=9)
+ggsave("04_figures/sediment_contaminants_by_site_all_PEL.png",width=7,height=9)
 
 ggplot(data=hm3%>%
          filter(sg_m=="Seagrass Bed")%>%
@@ -164,7 +190,7 @@ ggplot(data=hm3%>%
   ylab("mg/kg")
 
 
-ggsave("04_figures/contaminants_by_site_seagrass_PEL.png",width=7,height=9)
+ggsave("04_figures/sediment_contaminants_by_site_seagrass_PEL.png",width=7,height=9)
 
 ggplot(data=hm3%>%
          filter(sg_m=="Harbour or Marina"),aes(x=Site,y=conc))+
@@ -179,7 +205,7 @@ ggplot(data=hm3%>%
   ylab("mg/kg")
 
 
-ggsave("04_figures/contaminants_by_site_harbour_PEL.png",width=7,height=9)
+ggsave("04_figures/sediment_contaminants_by_site_harbour_PEL.png",width=7,height=9)
 
 ggplot(data=hm3,aes(x=Site,y=conc))+
   geom_jitter(aes(color=Site),width = .1,alpha=.5)+
@@ -294,4 +320,83 @@ ggsave(plot=plip,"04_figures/seagrass_pollutionloadindex.jpg",width=7,height=5)
           legend.position = "top",
           legend.title=element_blank()))
 ggsave(plot=plihp,"04_figures/habour_pollutionloadindex.jpg",width=7,height=5)
+
+
+# look at water to sediment over time in marinas
+hm4<-filter(hm2,sg_m=="Harbour or Marina")
+
+hm5<-hm4%>%
+  group_by(Site,Site2,sample.type,heavymetal,month)%>%
+  summarize(m.conc=signif(mean(conc),2),
+            n.samp=n(),
+            sd.conc=sd(conc),
+            u95.conc=signif(m.conc+1.95*sd.conc/sqrt(n.samp),2),
+            l95.conc=signif(m.conc-1.95*sd.conc/sqrt(n.samp),2))
+
+hm5$month<-factor(hm5$month,levels=c("june","december"),labels = c("June","December"))
+contrl<-hm5%>%
+  filter(sample.type=="water")%>%
+  filter(Site=="Crossing Rocks")%>%
+  ungroup()%>%
+  select(heavymetal,m.conc)%>%
+  distinct()
+
+# look at water over time
+ggplot(data=hm5%>%
+         filter(sample.type=="water")%>%
+         filter(Site!="Crossing Rocks"),aes(x=month,y=m.conc))+
+  geom_point(size=2)+
+  geom_hline(data=contrl,aes(yintercept=m.conc),linetype="dashed")+
+  geom_errorbar(aes(x=month,ymax=u95.conc,ymin=l95.conc),width=.1)+
+  facet_grid(heavymetal~Site,scales="free")
+
+# look at relationship between water and sediment in december
+hm6<-hm5%>%
+  filter(month=="December")%>%
+  ungroup()%>%
+  select(Site,heavymetal,m.conc,sample.type)%>%
+  distinct()%>%
+  pivot_wider(names_from = sample.type,values_from = m.conc,values_fill = NA)%>%
+  filter(!is.na(water))
+
+ggplot(hm6,aes(x=water,y=sediment,color=Site))+
+  geom_point(size=4,alpha=.3)+
+  facet_wrap(~heavymetal,scales="free")
+
+# look at differences between animals
+hm.an<-hm.anmls.j%>%
+  separate(Sample.ID,into=c("animal","ID"),sep=-1)
+
+ggplot(data=hm.an)+
+  geom_boxplot(aes(y=mgkg,fill=animal))+
+  facet_wrap(~heavymetal,scales="free")
+
+
+# summarize sediment and water quality data----
+hm.watsed.sum<-hm.watsed%>%
+  pivot_longer(Pb:V,names_to = "heavymetal",values_to = "conc")%>%
+  group_by(Site,month,heavymetal,sample.type)%>%
+  summarize(m.conc=mean(conc),
+            u95.conc=m.conc+(1.95*sd(conc)/sqrt(n())),
+            l95.conc=m.conc+(1.95*sd(conc)/sqrt(n())))
+
+hm.sed.sum<-filter(hm.watsed.sum,sample.type=="sediment")
+hm.wat.sum<-filter(hm.watsed.sum,sample.type!="sediment")
+
+# keep only sites with june and december water samples
+hm.wat.mnths<-hm.wat.sum%>%
+  ungroup()%>%
+  select(Site,month)%>%
+  distinct()%>%
+  group_by(Site)%>%
+  summarize(n=n())%>%
+  filter(n==2)
+
+hm.wat.reg<-hm.watsed%>%
+  filter(sample.type=="water")%>%
+  filter(Site %in% hm.wat.mnths$Site)
+
+hm.wat.reg$month<-factor(hm.wat.reg$month,levels=c("june","december"))
+
+as.wat<-aov(As~Site*month,data=hm.wat.reg)
 
